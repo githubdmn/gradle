@@ -1,8 +1,8 @@
 plugins {
-    id("org.springframework.boot") version "3.2.0" // Use the latest version
-    id("io.spring.dependency-management") version "1.0.11.RELEASE"
-    kotlin("jvm") version "1.8.0" // Include Kotlin if necessary
-    id("application") // Add the application plugin
+  java
+  id("org.springframework.boot") version "3.3.4"
+  id("io.spring.dependency-management") version "1.1.6"
+  id("application") // Add the application plugin
 }
 
 group = "com.example"
