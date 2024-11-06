@@ -5,6 +5,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 import com.example.DependencyInjectionApp.DIApp;
 
+@SuppressWarnings("unused")
 @SpringBootApplication
 public class DemoApplication {
 
@@ -12,6 +13,6 @@ public class DemoApplication {
 		// SpringApplication.run(DemoApplication.class, args);
 
 		// This is an example of DI
-		DIApp.runDepencencyInjectionExample(args);
+		DIApp.main(args);
 	}
 }
