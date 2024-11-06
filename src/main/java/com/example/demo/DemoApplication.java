@@ -14,9 +14,6 @@ public class DemoApplication {
 		// SpringApplication.run(DemoApplication.class, args);
 
 		// This is an example of DI
-		// DIApp.main(args);
-
-		// This is an example of Lombok
-		LombokApp.main(args);
+		DIApp.main(args);
 	}
 }
