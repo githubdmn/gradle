@@ -18,6 +18,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter")
     implementation("org.springframework.boot:spring-boot-starter-web") // For web applications
     testImplementation("org.springframework.boot:spring-boot-starter-test")
+    compileOnly("org.springframework.boot:spring-boot-devtools")
 }
 
 tasks.test {
@@ -28,3 +29,4 @@ tasks.test {
 application {
     mainClass.set("com.example.demo.DemoApplication") // Change this to your main class
 }
+

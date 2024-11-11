@@ -5,6 +5,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 import com.example.DependencyInjectionApp.DIApp;
 import com.example.Lombok.LombokApp;
+import com.example.RestBeer01.RestBeerApp01;
 
 @SuppressWarnings("unused")
 @SpringBootApplication
@@ -17,6 +18,10 @@ public class DemoApplication {
 		// DIApp.main(args);
 
 		// This is an example of Lombok
-		LombokApp.main(args);
+		// LombokApp.main(args);
+
+		// This is an example of Rest Beer App Basic
+		RestBeerApp01.main(args);
+
 	}
 }
