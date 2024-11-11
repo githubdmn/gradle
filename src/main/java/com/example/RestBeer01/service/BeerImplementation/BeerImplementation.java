@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import com.example.RestBeer01.model.Beer;
 import com.example.RestBeer01.service.BeerService;
@@ -94,5 +95,51 @@ public class BeerImplementation implements BeerService {
 		beerMap.put(savedBeer.getId(), savedBeer);
 		log.info("Save beer: ", savedBeer);
 		return savedBeer;
+	}
+
+	@Override
+	public Beer updateBeer(UUID beerId, Beer beer) {
+		Beer existing = beerMap.get(beerId);
+		existing.setName(beer.getName());
+		existing.setStyle(beer.getStyle());
+		existing.setPrice(beer.getPrice());
+		existing.setUpc(beer.getUpc());
+		existing.setQuantityOnHand(beer.getQuantityOnHand());
+		existing.setLastModifiedDate(LocalDateTime.now());
+		log.info("Update beer: ", existing);
+		beerMap.put(existing.getId(), existing);
+		return existing;
+	}
+
+	@Override
+	public void deleteBeer(UUID beerId) {
+		beerMap.remove(beerId);
+		log.info("Delete beer with Id: ", beerId);
+	}
+
+	@Override
+	public Beer patchBeer(UUID beerId, Beer beer) {
+		log.info("Patch beer with Id: ", beerId);
+		Beer existing = beerMap.get(beerId);
+		if (StringUtils.hasText(beer.getName())) {
+			existing.setName(beer.getName());
+		}
+		if (StringUtils.hasText(beer.getStyle())) {
+			existing.setStyle(beer.getStyle());
+		}
+		if (beer.getPrice() != null) {
+			existing.setPrice(beer.getPrice());
+		}
+		if (StringUtils.hasText(beer.getUpc())) {
+			existing.setUpc(beer.getUpc());
+		}
+		if (beer.getQuantityOnHand() != null) {
+			existing.setQuantityOnHand(beer.getQuantityOnHand());
+		}
+		existing.setLastModifiedDate(LocalDateTime.now());
+		log.info("Patch beer with Id: ", beerId);
+		beerMap.put(existing.getId(), existing);
+		log.info("Patch beer: ", existing);
+		return existing;
 	}
 }

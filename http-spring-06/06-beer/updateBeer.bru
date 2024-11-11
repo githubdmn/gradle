@@ -1,0 +1,28 @@
+meta {
+  name: updateBeer
+  type: http
+  seq: 1
+}
+
+put {
+  url: http://localhost:8080/api/v1/beer/:beerId
+  body: json
+  auth: none
+}
+
+params:path {
+  beerId: 9c9502b4-0df0-4a63-9ce8-bb016f29cb0a
+}
+
+body:json {
+  {
+      "version": 1,
+      "name": "PUT UPDATED beer",
+      "style": "Beer",
+      "upc": "123456",
+      "quantityOnHand": 122,
+      "price": 12.43,
+      "createdDate": "2024-11-11T10:47:09.307922875",
+      "lastModifiedDate": "2024-11-11T10:47:09.307950113"
+    }
+}

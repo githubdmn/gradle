@@ -11,4 +11,10 @@ public interface BeerService {
 	public List<Beer> listBeers();
 
 	public Beer saveBeer(Beer beer);
+
+	public Beer updateBeer(UUID beerId, Beer beer);
+
+	public void deleteBeer(UUID beerId);
+
+	public Beer patchBeer(UUID beerId, Beer beer);
 }
