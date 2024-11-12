@@ -21,7 +21,7 @@ public class BeerImplementation implements BeerService {
 
 	private Map<UUID, Beer> beerMap;
 
-	BeerImplementation() {
+	public BeerImplementation() {
 
 		this.beerMap = new HashMap<>();
 

@@ -18,6 +18,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter")
     implementation("org.springframework.boot:spring-boot-starter-web") // For web applications
     testImplementation("org.springframework.boot:spring-boot-starter-test")
+     testImplementation("org.mockito:mockito-core:3.+")
     compileOnly("org.springframework.boot:spring-boot-devtools")
 }
 
