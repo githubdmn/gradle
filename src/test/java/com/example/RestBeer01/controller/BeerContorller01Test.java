@@ -10,6 +10,8 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.*;
@@ -30,8 +32,6 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @WebMvcTest(BeerContorller01.class)
 public class BeerContorller01Test {
-
-	private final String api = "/api/v1/beer";
 
 	@Autowired
 	MockMvc mockMvc;
@@ -110,7 +110,7 @@ public class BeerContorller01Test {
 
 		given(beerService.updateBeer(beerId, testBeer)).willReturn(testBeer);
 
-		mockMvc.perform(put(BEER_ID)
+		mockMvc.perform(put(BEER_ID, beerId)
 				.accept(MediaType.APPLICATION_JSON)
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(objectMapper.writeValueAsString(testBeer)))
@@ -124,13 +124,37 @@ public class BeerContorller01Test {
 	}
 
 	@Test
-	void testDeleteBeer() {
+	void testDeleteBeer() throws Exception {
+		Beer testBeer = beerImplementation.listBeers().get(0);
+		UUID beerId = testBeer.getId();
 
+		// given(beerService.deleteBeer(beerId)).willReturn(true);
+
+		mockMvc.perform(delete(BEER_ID, beerId)
+				.accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isNoContent());
+
+		verify(beerService).deleteBeer(beerId);
 	}
 
 	@Test
-	void testPatchBeer() {
+	void testPatchBeer() throws Exception {
+		Beer testBeer = beerImplementation.listBeers().get(0);
+		UUID beerId = testBeer.getId();
 
+		Map<String, Object> beerMap = new HashMap<>();
+		beerMap.put("name", "New Name");
+
+		// given(beerService.patchBeer(beerId, beerMap)).willReturn(testBeer);
+
+		mockMvc.perform(patch(BEER_ID, beerId)
+				.accept(MediaType.APPLICATION_JSON)
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(objectMapper.writeValueAsString(beerMap)))
+				.andExpect(status().isOk())
+				.andExpect(header().exists("Location"));
+
+		// verify(beerService).patchBeer(beerId, beerMap);
 	}
 
 }
