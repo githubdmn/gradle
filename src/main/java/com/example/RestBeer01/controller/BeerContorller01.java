@@ -65,7 +65,7 @@ public class BeerContorller01 {
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Location", "/api/v1/beer/" + beerId.toString());
 
-		return new ResponseEntity<>(updatedBeer, headers, HttpStatus.OK);
+		return new ResponseEntity<>(updatedBeer, headers, HttpStatus.NO_CONTENT);
 	}
 
 	@DeleteMapping(BEER_ID)

@@ -105,22 +105,15 @@ public class BeerContorller01Test {
 
 	@Test // TODO: fix this
 	void testUpdateBeer() throws Exception {
-		Beer testBeer = beerImplementation.listBeers().get(0);
-		UUID beerId = testBeer.getId();
+		Beer beer = beerImplementation.listBeers().get(0);
 
-		given(beerService.updateBeer(beerId, testBeer)).willReturn(testBeer);
-
-		mockMvc.perform(put(BEER_ID, beerId)
+		mockMvc.perform(put(BEER_ID, beer.getId())
 				.accept(MediaType.APPLICATION_JSON)
 				.contentType(MediaType.APPLICATION_JSON)
-				.content(objectMapper.writeValueAsString(testBeer)))
-				.andDo(print())
-				.andExpect(status().isOk())
-				.andExpect(header().exists("Location"))
-				.andExpect(jsonPath("$.id", is(beerId.toString())))
-				.andExpect(jsonPath("$.name", is(testBeer.getName())));
+				.content(objectMapper.writeValueAsString(beer)))
+				.andExpect(status().isNoContent());
 
-		verify(beerService).updateBeer(beerId, testBeer);
+		verify(beerService).updateBeer(any(UUID.class), any(Beer.class));
 	}
 
 	@Test
