@@ -10,6 +10,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+import java.util.Optional;
 import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.*;
@@ -19,7 +20,7 @@ import static org.hamcrest.Matchers.is;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 
-import static com.example.RestBeer01.controller.BeerContorller01.*;
+import static com.example.RestBeer01.controller.BeerController01.*;
 import com.example.RestBeer01.model.Beer;
 import com.example.RestBeer01.service.BeerService;
 import com.example.RestBeer01.service.BeerImplementation.BeerImplementation;
@@ -28,7 +29,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-@WebMvcTest(BeerContorller01.class)
+@WebMvcTest(BeerController01.class)
 public class BeerContorller01Test {
 
 	@Autowired
@@ -58,11 +59,10 @@ public class BeerContorller01Test {
 		// Configure Mockito
 		given(beerService.getBeerById(testBeer.getId())).willReturn(testBeer);
 
-		mockMvc.perform(get(BEER_ID, testBeer.getId())
-				.accept(MediaType.APPLICATION_JSON))
-				.andExpect(status().isOk())
-				.andExpect(content().contentType(MediaType.APPLICATION_JSON))
-				.andDo(print()) // This will help debug by printing the response
+		mockMvc.perform(get(BEER_ID, testBeer.getId()).accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
+				.andExpect(content().contentType(MediaType.APPLICATION_JSON)).andDo(print()) // This will help debug
+				// by printing the
+				// response
 				.andExpect(jsonPath("$.id", is(testBeer.getId().toString())))
 				.andExpect(jsonPath("$.name", is(testBeer.getName())));
 	}
@@ -71,9 +71,7 @@ public class BeerContorller01Test {
 	void testListBeers() throws Exception {
 		given(beerService.listBeers()).willReturn(beerImplementation.listBeers());
 
-		mockMvc.perform(get(BEER_URL)
-				.accept(MediaType.APPLICATION_JSON))
-				.andExpect(status().isOk())
+		mockMvc.perform(get(BEER_URL).accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
 				.andExpect(content().contentType(MediaType.APPLICATION_JSON))
 				.andExpect(jsonPath("$.length()", is(3)));
 	}
@@ -90,14 +88,9 @@ public class BeerContorller01Test {
 		beer.setVersion(null);
 		beer.setId(null);
 		// #3
-		given(beerService.saveBeer((Beer) any(Beer.class)))
-				.willReturn(beerImplementation.listBeers().get(1));
-		mockMvc
-				.perform(post(BEER_URL)
-						.accept(MediaType.APPLICATION_JSON)
-						.contentType(MediaType.APPLICATION_JSON)
-						.content(objectMapper.writeValueAsString(beer)))
-				.andExpect(status().isCreated())
+		given(beerService.saveBeer((Beer) any(Beer.class))).willReturn(beerImplementation.listBeers().get(1));
+		mockMvc.perform(post(BEER_URL).accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON)
+				.content(objectMapper.writeValueAsString(beer))).andExpect(status().isCreated())
 				.andExpect(header().exists("Location"));
 	}
 
@@ -105,10 +98,8 @@ public class BeerContorller01Test {
 	void testUpdateBeer() throws Exception {
 		Beer beer = beerImplementation.listBeers().get(0);
 
-		mockMvc.perform(put(BEER_ID, beer.getId())
-				.accept(MediaType.APPLICATION_JSON)
-				.contentType(MediaType.APPLICATION_JSON)
-				.content(objectMapper.writeValueAsString(beer)))
+		mockMvc.perform(put(BEER_ID, beer.getId()).accept(MediaType.APPLICATION_JSON)
+				.contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(beer)))
 				.andExpect(status().isNoContent());
 
 		verify(beerService).updateBeer(any(UUID.class), any(Beer.class));
@@ -121,9 +112,7 @@ public class BeerContorller01Test {
 
 		// given(beerService.deleteBeer(beerId)).willReturn(true);
 
-		mockMvc.perform(delete(BEER_ID, beerId)
-				.accept(MediaType.APPLICATION_JSON))
-				.andExpect(status().isNoContent());
+		mockMvc.perform(delete(BEER_ID, beerId).accept(MediaType.APPLICATION_JSON)).andExpect(status().isNoContent());
 
 		verify(beerService).deleteBeer(beerId);
 	}
@@ -148,4 +137,17 @@ public class BeerContorller01Test {
 	// verify(beerService).patchBeer(beerId, beerMap);
 	// }
 
+	@Test
+	void testGetBeerByIdNotFound() throws Exception {
+		given(beerService.getBeerById(any(UUID.class))).willThrow(NotFoundException.class);
+
+		mockMvc.perform(get(BeerController01.BEER_ID, UUID.randomUUID())).andExpect(status().isNotFound());
+	}
+
+	@Test
+	void testGetBeerByIdOptionalNotFound() throws Exception {
+		given(beerService.getBeerByIdOptional(any(UUID.class))).willReturn(Optional.empty());
+
+		mockMvc.perform(get("/api/v1/beer/optional/{beerId}", UUID.randomUUID())).andExpect(status().isNotFound());
+	}
 }
