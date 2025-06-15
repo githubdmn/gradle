@@ -8,7 +8,13 @@ plugins {
 
 group = "com.example"
 version = "0.0.1-SNAPSHOT"
-java.sourceCompatibility = JavaVersion.VERSION_17 // Specify your Java version
+
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(17))
+    }
+    sourceCompatibility = JavaVersion.VERSION_17
+}
 
 repositories {
     mavenCentral()
@@ -16,7 +22,7 @@ repositories {
 
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter")
-    implementation("org.springframework.boot:spring-boot-starter-web") // For web applications
+    implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-actuator")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.mockito:mockito-core:3.+")
@@ -27,7 +33,6 @@ tasks.test {
     useJUnitPlatform()
 }
 
-// Configure the application plugin
 application {
-    mainClass.set("com.example.demo.DemoApplication") // Change this to your main class
+    mainClass.set("com.example.demo.DemoApplication")
 }
