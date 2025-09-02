@@ -1,5 +1,6 @@
 package com.example.demo;
 
+import com.example.RestBeer02.RestBeer02;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
@@ -21,7 +22,8 @@ public class DemoApplication {
 		// LombokApp.main(args);
 
 		// This is an example of Rest Beer App Basic
-		RestBeerApp01.main(args);
-
+		// RestBeerApp01.main(args);
+		
+		RestBeer02.main(args);
 	}
 }
