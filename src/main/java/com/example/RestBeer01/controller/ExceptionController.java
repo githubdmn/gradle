@@ -11,7 +11,7 @@ import com.example.RestBeer01.model.Beer;
 public class ExceptionController {
 
 	@ExceptionHandler(NotFoundException.class)
-	public ResponseEntity<Beer> handleNotFoundException() {
+	public ResponseEntity<Beer> handleNotFoundException() { //AUTOMATICALLY CATCHES IT
 		System.out.println("In Beer Not Found Exception");
 		return ResponseEntity.notFound().build();
 	}
