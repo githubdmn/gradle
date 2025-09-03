@@ -1,5 +1,6 @@
 package com.example.RestBeer02.service.implementation;
 
+import com.example.RestBeer02.exception.NotFoundException;
 import com.example.RestBeer02.model.Beer02;
 
 import com.example.RestBeer02.service.Beer02Service;
@@ -14,11 +15,11 @@ import java.util.*;
 @Slf4j
 @Service
 @Primary
-public class BeerImplementation implements Beer02Service {
+public class Beer02Implementation implements Beer02Service {
 	
 	private final Map<UUID, Beer02> beerMap;
 	
-	public BeerImplementation() {
+	public Beer02Implementation() {
 		
 		this.beerMap = new HashMap<>();
 		
