@@ -43,14 +43,18 @@ public class Beer02Implementation implements Beer02Service {
 	
 	@Override
 	public Beer02 getBeerById(UUID id) {
-		log.info("Get beer with Id " + id.toString());
-		return beerMap.get(id);
+		log.info("Get beer with Id {}", id);
+		Beer02 beer = beerMap.get(id);
+		if (beer == null) {
+			throw new NotFoundException("Beer not found: " + id);
+		}
+		return beer;
 	}
 	
 	@Override
 	public Optional<Beer02> getBeerByIdOptional(UUID id) {
-		log.info("Get beer with Id " + id.toString());
-		return Optional.of(beerMap.get(id));
+		log.info("Get beer with Id {}", id);
+		return Optional.ofNullable(beerMap.get(id));
 	}
 	
 	@Override
@@ -77,27 +81,36 @@ public class Beer02Implementation implements Beer02Service {
 	@Override
 	public Beer02 updateBeer(UUID beerId, Beer02 beer) {
 		Beer02 existing = beerMap.get(beerId);
+		if (existing == null) {
+			throw new NotFoundException("Beer not found: " + beerId);
+		}
 		existing.setName(beer.getName());
 		existing.setStyle(beer.getStyle());
 		existing.setPrice(beer.getPrice());
 		existing.setUpc(beer.getUpc());
 		existing.setQuantityOnHand(beer.getQuantityOnHand());
 		existing.setLastModifiedDate(LocalDateTime.now());
-		log.info("Update beer: " + existing.toString());
+		log.info("Update beer: {}", existing);
 		beerMap.put(existing.getId(), existing);
 		return existing;
 	}
 	
 	@Override
 	public void deleteBeer(UUID beerId) {
-		beerMap.remove(beerId);
-		log.info("Delete beer with Id: " + beerId);
+		Beer02 removed = beerMap.remove(beerId);
+		if (removed == null) {
+			throw new NotFoundException("Beer not found: " + beerId);
+		}
+		log.info("Delete beer with Id: {}", beerId);
 	}
 	
 	@Override
 	public Beer02 patchBeer(UUID beerId, Beer02 beer) {
-		log.info("Patch beer with Id: ", beerId);
+		log.info("Patch beer with Id: {}", beerId);
 		Beer02 existing = beerMap.get(beerId);
+		if (existing == null) {
+			throw new NotFoundException("Beer not found: " + beerId);
+		}
 		if (StringUtils.hasText(beer.getName())) {
 			existing.setName(beer.getName());
 		}
@@ -114,9 +127,8 @@ public class Beer02Implementation implements Beer02Service {
 			existing.setQuantityOnHand(beer.getQuantityOnHand());
 		}
 		existing.setLastModifiedDate(LocalDateTime.now());
-		log.info("Patch beer with Id: " + beerId);
+		log.info("Patched beer: {}", existing);
 		beerMap.put(existing.getId(), existing);
-		log.info("Patch beer: " + existing.toString());
 		return existing;
 	}
 }

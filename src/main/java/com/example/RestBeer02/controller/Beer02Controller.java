@@ -1,6 +1,5 @@
 package com.example.RestBeer02.controller;
 
-
 import com.example.RestBeer02.model.Beer02;
 import com.example.RestBeer02.service.Beer02Service;
 import lombok.AllArgsConstructor;
@@ -17,22 +16,21 @@ import java.util.UUID;
 @AllArgsConstructor
 @RestController
 public class Beer02Controller {
-	
 	public static final String BEER_URL = "/api/v1/beer";
 	public static final String BEER_ID = BEER_URL + "/{beerId}";
-	
+
 	private final Beer02Service beerService;
-	
+
 	@GetMapping(BEER_URL)
 	public ResponseEntity<List<Beer02>> listBeers() {
 		log.info("Get all beers");
 		return ResponseEntity.ok(beerService.listBeers());
 	}
-	
-	@GetMapping("/beers/{id}")
-	public ResponseEntity<Beer02> getBeer(@PathVariable UUID id) {
-		log.info("Get beer by ID: ", id);
-		Beer02 beer = beerService.getBeerById(id);  // Service handles orElseThrow
+
+	@GetMapping(BEER_ID)
+	public ResponseEntity<Beer02> getBeer(@PathVariable("beerId") UUID beerId) {
+		log.info("Get beer by ID: {}", beerId);
+		Beer02 beer = beerService.getBeerById(beerId);
 		return ResponseEntity.ok(beer);
 	}
 }
