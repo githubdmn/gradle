@@ -8,7 +8,7 @@ import java.util.UUID;
 
 @Data
 @Builder
-public class Beer02 {
+public class Beer02DTO {
 	private UUID id;
 	private Integer version;
 	private String name;
