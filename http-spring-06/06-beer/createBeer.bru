@@ -1,0 +1,25 @@
+meta {
+  name: createBeer
+  type: http
+  seq: 1
+}
+
+post {
+  url: http://localhost:8005/api/v1/beer
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+      "id": "018a3b31-6a28-4aa0-ace8-3f71ea5d8f52",
+      "version": 1,
+      "beerName": "New beer",
+      "beerStyle": "BEER",
+      "upc": "123456",
+      "quantityOnHand": 122,
+      "price": 12.43,
+      "createdDate": "2024-11-11T10:47:09.307922875",
+      "lastModifiedDate": "2024-11-11T10:47:09.307950113"
+    }
+}
