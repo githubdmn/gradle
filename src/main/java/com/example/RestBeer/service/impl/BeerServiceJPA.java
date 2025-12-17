@@ -1,12 +1,14 @@
 package com.example.RestBeer.service.impl;
 
 import com.example.RestBeer.entities.Beer;
+import com.example.RestBeer.exception.NotFoundException;
 import com.example.RestBeer.mappers.BeerMapper;
 import com.example.RestBeer.model.BeerDTO;
 import com.example.RestBeer.model.BeerStyle;
 import com.example.RestBeer.repositories.BeerRepository;
 import com.example.RestBeer.service.BeerService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Primary;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -18,81 +20,42 @@ import org.springframework.util.StringUtils;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
-@Primary
 @RequiredArgsConstructor
+@Primary
 public class BeerServiceJPA implements BeerService {
 	
-	private static final int DEFAULT_PAGE = 0;
-	private static final int DEFAULT_PAGE_SIZE = 25;
-
 	private final BeerRepository beerRepository;
-	private final BeerMapper beerMapper;
-	
+	private final BeerMapper beerMapper;  // MapStruct mapper injected
 	
 	@Override
 	public Optional<BeerDTO> getBeerById(UUID id) {
-		return Optional.ofNullable(beerMapper.beerToBeerDto(beerRepository.findById(id)
-				.orElse(null)));
-	}
-	
-	public PageRequest buildPageRequest(Integer pageNumber, Integer pageSize) {
-		int queryPageNumber;
-		int queryPageSize;
-		
-		if (pageNumber != null && pageNumber > 0) {
-			queryPageNumber = pageNumber - 1;
-		} else {
-			queryPageNumber = DEFAULT_PAGE;
-		}
-		
-		if (pageSize == null) {
-			queryPageSize = DEFAULT_PAGE_SIZE;
-		} else {
-			if (pageSize > 1000) {
-				queryPageSize = 1000;
-			} else {
-				queryPageSize = pageSize;
-			}
-		}
-		
-		Sort sort = Sort.by(Sort.Order.asc("beerName"));
-		
-		return PageRequest.of(queryPageNumber, queryPageSize, sort);
-	}
-	
-	private Page<Beer> listBeersByNameAndStyle(String beerName, BeerStyle beerStyle, Pageable pageable) {
-		return beerRepository.findAllByBeerNameIsLikeIgnoreCaseAndBeerStyle("%" + beerName + "%",
-				beerStyle, pageable);
-	}
-	
-	public Page<Beer> listBeersByStyle(BeerStyle beerStyle, Pageable pageable) {
-		return beerRepository.findAllByBeerStyle(beerStyle, pageable);
-	}
-	
-	public Page<Beer> listBeersByName(String beerName, Pageable pageable){
-		return beerRepository.findAllByBeerNameIsLikeIgnoreCase("%" + beerName + "%", pageable);
+		log.debug("Get Beer by Id - Service. Id: {}", id);
+		return beerRepository.findById(id)
+				.map(beerMapper::beerToBeerDto);
 	}
 	
 	@Override
 	public Page<BeerDTO> listBeers(String beerName, BeerStyle beerStyle, Boolean showInventory,
 	                               Integer pageNumber, Integer pageSize) {
+		log.debug("List Beers with filters - Service");
 		
-		PageRequest pageRequest = buildPageRequest(pageNumber, pageSize);
-		
+		Pageable pageable = buildPageable(pageNumber, pageSize);
 		Page<Beer> beerPage;
 		
-		if(StringUtils.hasText(beerName) && beerStyle == null) {
-			beerPage = listBeersByName(beerName, pageRequest);
-		} else if (!StringUtils.hasText(beerName) && beerStyle != null){
-			beerPage = listBeersByStyle(beerStyle, pageRequest);
-		} else if (StringUtils.hasText(beerName) && beerStyle != null){
-			beerPage = listBeersByNameAndStyle(beerName, beerStyle, pageRequest);
+		if (StringUtils.hasText(beerName) && beerStyle != null) {
+			beerPage = beerRepository.findAllByBeerNameIsLikeIgnoreCaseAndBeerStyle(
+					"%" + beerName + "%", beerStyle, pageable);
+		} else if (StringUtils.hasText(beerName)) {
+			beerPage = beerRepository.findAllByBeerNameIsLikeIgnoreCase(
+					"%" + beerName + "%", pageable);
+		} else if (beerStyle != null) {
+			beerPage = beerRepository.findAllByBeerStyle(beerStyle, pageable);
 		} else {
-			beerPage = beerRepository.findAll(pageRequest);
+			beerPage = beerRepository.findAll(pageable);
 		}
 		
 		if (showInventory != null && !showInventory) {
@@ -100,74 +63,80 @@ public class BeerServiceJPA implements BeerService {
 		}
 		
 		return beerPage.map(beerMapper::beerToBeerDto);
-		
 	}
 	
 	@Override
 	public List<BeerDTO> listBeers() {
-		return beerRepository.findAll().stream().map(beerMapper::beerToBeerDto).collect(Collectors.toList());
+		log.debug("List all Beers - Service");
+		return beerRepository.findAll().stream()
+				.map(beerMapper::beerToBeerDto)
+				.collect(Collectors.toList());
 	}
 	
 	@Override
-	public BeerDTO saveBeer(BeerDTO beer) {
-		return beerMapper.beerToBeerDto(beerRepository.save(beerMapper.beerDtoToBeer(beer)));
-	}
-	
-	@Override
-	public BeerDTO updateBeer(UUID beerId, BeerDTO beer) {
-		AtomicReference<Optional<BeerDTO>> atomicReference = new AtomicReference<>();
+	public BeerDTO saveBeer(BeerDTO beerDto) {
+		log.debug("Save Beer - Service: {}", beerDto);
 		
-		beerRepository.findById(beerId).ifPresentOrElse(foundBeer -> {
-			foundBeer.setBeerName(beer.getBeerName());
-			foundBeer.setBeerStyle(beer.getBeerStyle());
-			foundBeer.setUpc(beer.getUpc());
-			foundBeer.setPrice(beer.getPrice());
-			foundBeer.setQuantityOnHand(beer.getQuantityOnHand());
-			atomicReference.set(Optional.of(beerMapper
-					.beerToBeerDto(beerRepository.save(foundBeer))));
-		}, () -> {
-			atomicReference.set(Optional.empty());
-		});
-		
-		return atomicReference.get();
-	}
-	
-	@Override
-	public Boolean deleteBeer(UUID beerId) {
-		if (beerRepository.existsById(beerId)) {
-			beerRepository.deleteById(beerId);
-			return true;
+		// Check if beer with same UPC already exists
+		if (beerRepository.existsByUpc(beerDto.getUpc())) {
+			throw new IllegalArgumentException("Beer with UPC " + beerDto.getUpc() + " already exists");
 		}
+		
+		Beer beer = beerMapper.beerDtoToBeer(beerDto);
+		Beer savedBeer = beerRepository.save(beer);
+		return beerMapper.beerToBeerDto(savedBeer);
+	}
+	
+	@Override
+	public BeerDTO updateBeer(UUID beerId, BeerDTO beerDto) {
+		log.debug("Update Beer - Service. Id: {}", beerId);
+		
+		Beer beer = beerRepository.findById(beerId)
+				.orElseThrow(() -> new NotFoundException("Beer not found: " + beerId));
+		
+		// Update all fields except ID and audit fields
+		beer.setBeerName(beerDto.getBeerName());
+		beer.setBeerStyle(beerDto.getBeerStyle());
+		beer.setUpc(beerDto.getUpc());
+		beer.setPrice(beerDto.getPrice());
+		beer.setQuantityOnHand(beerDto.getQuantityOnHand());
+		
+		Beer updatedBeer = beerRepository.save(beer);
+		return beerMapper.beerToBeerDto(updatedBeer);
+	}
+	
+	@Override
+	public boolean deleteBeer(UUID beerId) {
+		log.debug("Delete Beer - Service. Id: {}", beerId);
+		
+		if (!beerRepository.existsById(beerId)) {
+			throw new NotFoundException("Beer not found: " + beerId);
+		}
+		
+		beerRepository.deleteById(beerId);
 		return false;
 	}
 	
-	
 	@Override
-	public Optional<BeerDTO> patchBeer(UUID beerId, BeerDTO beer) {
-		AtomicReference<Optional<BeerDTO>> atomicReference = new AtomicReference<>();
+	public Optional<BeerDTO> patchBeer(UUID beerId, BeerDTO beerDto) {
+		log.debug("Patch Beer - Service. Id: {}", beerId);
 		
-		beerRepository.findById(beerId).ifPresentOrElse(foundBeer -> {
-			if (StringUtils.hasText(beer.getBeerName())){
-				foundBeer.setBeerName(beer.getBeerName());
-			}
-			if (beer.getBeerStyle() != null){
-				foundBeer.setBeerStyle(beer.getBeerStyle());
-			}
-			if (StringUtils.hasText(beer.getUpc())){
-				foundBeer.setUpc(beer.getUpc());
-			}
-			if (beer.getPrice() != null){
-				foundBeer.setPrice(beer.getPrice());
-			}
-			if (beer.getQuantityOnHand() != null){
-				foundBeer.setQuantityOnHand(beer.getQuantityOnHand());
-			}
-			atomicReference.set(Optional.of(beerMapper
-					.beerToBeerDto(beerRepository.save(foundBeer))));
-		}, () -> {
-			atomicReference.set(Optional.empty());
-		});
+		Beer beer = beerRepository.findById(beerId)
+				.orElseThrow(() -> new NotFoundException("Beer not found: " + beerId));
 		
-		return atomicReference.get();
+		// Use MapStruct for partial update
+		beerMapper.updateBeerFromDto(beerDto, beer);
+		
+		Beer updatedBeer = beerRepository.save(beer);
+		return Optional.ofNullable(beerMapper.beerToBeerDto(updatedBeer));
+	}
+	
+	// Helper method for pagination
+	private Pageable buildPageable(Integer pageNumber, Integer pageSize) {
+		int queryPageNumber = pageNumber != null ? Math.max(pageNumber - 1, 0) : 0;
+		int queryPageSize = pageSize != null ? Math.min(Math.max(pageSize, 1), 100) : 25;
+		
+		return PageRequest.of(queryPageNumber, queryPageSize,
+				Sort.by(Sort.Order.asc("beerName")));
 	}
 }

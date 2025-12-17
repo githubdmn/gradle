@@ -1,32 +1,50 @@
 package com.example.RestBeer.entities;
 
+import com.example.RestBeer.model.BeerStyle;
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Getter
 @Setter
 @Builder
-@Entity
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
+@Entity
+@Table(name = "beers")
 public class Beer {
+	
 	@Id
-	@GeneratedValue(generator = "UUID")
-	//'org.hibernate.annotations.GenericGenerator' is deprecated since version 6.5
-	// @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
-	@Column(length = 36, columnDefinition = "varchar", updatable = false, nullable = false)
+	@GeneratedValue(strategy = GenerationType.UUID)
 	private UUID id;
+	
 	@Version
 	private Integer version;
-	private String name;
-	private String style;
+	
+	@Column(name = "beer_name", nullable = false)
+	private String beerName;
+	
+	@Enumerated(EnumType.STRING)
+	@Column(nullable = false)
+	private BeerStyle beerStyle;
+	
+	@Column(nullable = false, unique = true)
 	private String upc;
+	
+	@Column(nullable = false)
+	private BigDecimal price;
+	
 	private Integer quantityOnHand;
-	private Double price;
+	
+	@CreationTimestamp
+	@Column(updatable = false)
 	private LocalDateTime createdDate;
+	
+	@UpdateTimestamp
 	private LocalDateTime lastModifiedDate;
 }

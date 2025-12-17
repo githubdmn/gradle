@@ -8,15 +8,15 @@ import java.util.UUID;
 
 public interface CustomerService {
 	
-	Optional<CustomerDTO> getCustomerById(UUID uuid);
+	Optional<CustomerDTO> getCustomerById(UUID customerId);
 	
 	List<CustomerDTO> getAllCustomers();
 	
 	CustomerDTO saveNewCustomer(CustomerDTO customer);
 	
-	Optional<CustomerDTO> updateCustomerById(UUID customerId, CustomerDTO customer);
+	CustomerDTO updateCustomerById(UUID customerId, CustomerDTO customer);
 	
-	Boolean deleteCustomerById(UUID customerId);
+	boolean deleteCustomerById(UUID customerId);
 	
-	Optional<CustomerDTO> patchCustomerById(UUID customerId, CustomerDTO customer);
+	CustomerDTO patchCustomerById(UUID customerId, CustomerDTO customer);
 }
