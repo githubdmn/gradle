@@ -50,7 +50,7 @@ public class BeerServiceJPA implements BeerService {
 			beerPage = beerRepository.findAllByBeerNameIsLikeIgnoreCaseAndBeerStyle(
 					"%" + beerName + "%", beerStyle, pageable);
 		} else if (StringUtils.hasText(beerName)) {
-			beerPage = beerRepository.findAllByBeerNameIsLikeIgnoreCase(
+			beerPage = beerRepository.findAllByBeerNameContainingIgnoreCase(
 					"%" + beerName + "%", pageable);
 		} else if (beerStyle != null) {
 			beerPage = beerRepository.findAllByBeerStyle(beerStyle, pageable);
