@@ -27,8 +27,8 @@ dependencies {
 
     // JPA & Database
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
-    runtimeOnly("com.h2database:h2")                    // Development
-    runtimeOnly("org.postgresql:postgresql")            // Production (optional)
+//    runtimeOnly("com.h2database:h2")                    // Development
+//    runtimeOnly("org.postgresql:postgresql")            // Production (optional)
     // Add MySQL Connector/J driver (Recommended for Spring Boot 3.x+)
     runtimeOnly("com.mysql:mysql-connector-j")
 
