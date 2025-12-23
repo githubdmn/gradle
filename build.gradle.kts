@@ -32,6 +32,10 @@ dependencies {
     // Add MySQL Connector/J driver (Recommended for Spring Boot 3.x+)
     runtimeOnly("com.mysql:mysql-connector-j")
 
+    // 🚀 FLYWAY
+    implementation("org.flywaydb:flyway-core")
+    implementation("org.flywaydb:flyway-mysql")  // MySQL-specific support
+
     // Actuator
     implementation("org.springframework.boot:spring-boot-starter-actuator")
 

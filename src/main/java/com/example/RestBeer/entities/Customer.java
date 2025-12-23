@@ -33,4 +33,7 @@ public class Customer {
 	
 	@UpdateTimestamp
 	private LocalDateTime lastModifiedDate;
+	
+	@Column(length = 255)
+	private String email;
 }
