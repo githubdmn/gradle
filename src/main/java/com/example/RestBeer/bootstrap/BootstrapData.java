@@ -20,6 +20,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Random;
 
 @Component
 @RequiredArgsConstructor
@@ -56,15 +57,28 @@ public class BootstrapData implements CommandLineRunner {
 					default -> BeerStyle.PILSNER;
 				};
 				
+				String upc = generateRandomUPC();
+				
 				beerRepository.save(Beer.builder()
 						.beerName(StringUtils.abbreviate(beerCSVRecord.getBeer(), 50))
 						.beerStyle(beerStyle)
 						.price(BigDecimal.TEN)
-						.upc(beerCSVRecord.getRow().toString())
+						.upc(upc)
 						.quantityOnHand(beerCSVRecord.getCount())
 						.build());
 			});
 		}
+	}
+	
+	private String generateRandomUPC() {
+		Random random = new Random();
+		StringBuilder upc = new StringBuilder(12);
+		
+		for (int i = 0; i < 12; i++) {
+			upc.append(random.nextInt(10)); // Random digit 0-9
+		}
+		
+		return upc.toString();
 	}
 	
 	private void loadBeerData() {
@@ -92,7 +106,7 @@ public class BootstrapData implements CommandLineRunner {
 			Beer beer3 = Beer.builder()
 					.beerName("Sunshine City")
 					.beerStyle(BeerStyle.IPA)
-					.upc("12356")
+					.upc("123567")
 					.price(new BigDecimal("13.99"))
 					.quantityOnHand(144)
 					.createdDate(LocalDateTime.now())

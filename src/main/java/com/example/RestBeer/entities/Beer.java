@@ -43,7 +43,7 @@ public class Beer {
 	
 	@NotBlank
 	@Size(max = 50)
-	@Pattern(regexp = "^[0-9]{12,13}$", message = "UPC must be 12 or 13 digits")
+	// @Pattern(regexp = "^[0-9]{12,13}$", message = "UPC must be 12 or 13 digits")
 	@Column(nullable = false, unique = true, length = 50)
 	private String upc;
 	
