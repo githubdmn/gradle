@@ -42,6 +42,10 @@ dependencies {
     // API Documentation (optional)
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.6.0")
 
+    // ===== Utilities =====
+    // ✅ UPDATED: OpenCSV with latest version (supports Java 8-17+)
+    implementation("com.opencsv:opencsv:5.9")  // Latest stable (2023)
+
     implementation("org.mapstruct:mapstruct:1.6.3")
     annotationProcessor("org.mapstruct:mapstruct-processor:1.6.3")
 
