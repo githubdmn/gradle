@@ -32,13 +32,13 @@ public class BootstrapData implements CommandLineRunner {
 	@Transactional
 	@Override
 	public void run(String... args) throws Exception {
-		loadBeerData();
-		loadCsvData();
-		loadCustomerData();
+//		loadBeerData();
+//		loadCsvData();
+//		loadCustomerData();
 	}
 	
 	private void loadCsvData() throws FileNotFoundException {
-		if (beerRepository.count() < 10){
+		if (beerRepository.count() < 10) {
 			File file = ResourceUtils.getFile("classpath:csvdata/beers.csv");
 			
 			List<BeerCSVRecord> recs = beerCsvService.convertCSV(file);
@@ -82,7 +82,7 @@ public class BootstrapData implements CommandLineRunner {
 	}
 	
 	private void loadBeerData() {
-		if (beerRepository.count() == 0){
+		if (beerRepository.count() == 0) {
 			Beer beer1 = Beer.builder()
 					.beerName("Galaxy Cat")
 					.beerStyle(BeerStyle.PALE_ALE)

@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.math.BigDecimal;
@@ -17,7 +18,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "beers", indexes = {
+@Table(name = "beer", indexes = {
 		@Index(name = "idx_beer_name", columnList = "beer_name"),
 		@Index(name = "idx_beer_style", columnList = "beer_style"),
 		@Index(name = "idx_upc", columnList = "upc")
@@ -26,6 +27,7 @@ public class Beer {
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.UUID)
+	@JdbcTypeCode(java.sql.Types.VARCHAR)
 	private UUID id;
 	
 	@Version
