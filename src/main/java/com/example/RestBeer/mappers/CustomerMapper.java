@@ -21,5 +21,6 @@ public interface CustomerMapper {
 	@Mapping(target = "id", ignore = true)
 	@Mapping(target = "version", ignore = true)
 	@Mapping(target = "createdDate", ignore = true)
+	@Mapping(source = "updateDate", target = "lastModifiedDate")
 	void updateCustomerFromDto(CustomerDTO dto, @MappingTarget Customer customer);
 }
