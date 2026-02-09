@@ -95,7 +95,7 @@ public class BeerController {
 	public ResponseEntity<Void> deleteBeer(@PathVariable UUID beerId) {
 		log.info("Delete beer with ID: {}", beerId);
 		
-		beerService.deleteBeer(beerId);
+		boolean deleted = beerService.deleteBeer(beerId);
 		return ResponseEntity.noContent().build();
 	}
 }
